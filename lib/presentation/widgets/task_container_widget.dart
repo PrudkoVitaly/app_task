@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
+import 'completed_container_widget.dart';
 
 class TaskContainerWidget extends StatefulWidget {
   final double top;
@@ -13,46 +14,72 @@ class TaskContainerWidget extends StatefulWidget {
 
 class _TaskContainerWidgetState extends State<TaskContainerWidget> {
   bool defaultValue = false;
-  double defaultHeight = 105;
-  int defaultCount = 1;
+  double defaultHeight = 700;
+  int defaultCount = 20;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: widget.top, right: 20, left: 20),
-      height: defaultHeight * defaultCount,
-      decoration: BoxDecoration(
-        color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(16),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(
+              top: widget.top,
+            ),
+            height: 272,
+            decoration: BoxDecoration(
+              color: AppColors.whiteColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: _listItems(defaultValue, (value) {
+              setState(() {
+                defaultValue = value!;
+              });
+            }, defaultCount),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Text(
+              "Completed",
+              style: TextStyle(
+                color: AppColors.blackColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          CompletedContainerWidget(),
+        ],
       ),
-      child: _listItems(defaultValue, (value) {
-        setState(() {
-          defaultValue = value!;
-        });
-      }, defaultCount),
     );
   }
 }
 
 Widget _listItems(bool value, Function(bool?)? onChanged, int count) {
-  return ListView.builder(
+  return ListView.separated(
     itemCount: count,
+    separatorBuilder: (context, index) {
+      return const Divider();
+    },
     itemBuilder: (context, index) {
-      return Column(
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: AppColors.primary,
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: AppColors.primary,
+              ),
+              title: Text('Task ${index + 1}'),
+              subtitle: const Text('Description'),
+              trailing: Checkbox(
+                value: value,
+                onChanged: onChanged,
+              ),
             ),
-            title: Text('Task ${index + 1}'),
-            subtitle: Text('Description'),
-            trailing: Checkbox(
-              value: value,
-              onChanged: onChanged,
-            ),
-          ),
-          Divider(),
-        ],
+          ],
+        ),
       );
     },
   );
