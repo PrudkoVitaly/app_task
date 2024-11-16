@@ -32,8 +32,8 @@ class _CalendarState extends State<Calendar> {
   Widget build(BuildContext context) {
     return CalendarTimeline(
       showYears: false,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2024, 1, 1),
       lastDate: DateTime.now().add(const Duration(days: 365 * 4)),
       eventDates: _eventDates,
       onDateSelected: (date) => setState(() => _selectedDate = date),
