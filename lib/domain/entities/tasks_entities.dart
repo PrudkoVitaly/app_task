@@ -1,4 +1,5 @@
 class TasksEntities {
+  final String id;
   final String title;
   final int color;
   final String icon;
@@ -9,6 +10,7 @@ class TasksEntities {
   bool isDone;
 
   TasksEntities({
+    required this.id,
     required this.title,
     required this.color,
     required this.icon,

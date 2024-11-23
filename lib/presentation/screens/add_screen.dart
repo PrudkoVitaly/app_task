@@ -1,10 +1,14 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:app_task/domain/entities/tasks_entities.dart';
+import 'package:app_task/domain/use_case/add_task_useCase.dart';
 import 'package:app_task/presentation/screens/home_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../../core/app_colors.dart';
 import '../../data/model/categoty_model.dart';
+import '../../data/model/task_model.dart';
+import '../../service_locator.dart';
 import '../widgets/app_bar_widget.dart';
 import '../widgets/floating_button_widget.dart';
 
@@ -73,6 +77,29 @@ class _AddScreenState extends State<AddScreen> {
     "Shopping": Icons.shopping_bag,
     "Travel": Icons.flight,
   };
+
+  final addTaskUseCase = sl<AddTaskUseCase>();
+
+  void save() async {
+    final title = titleController.text;
+    final notes = notesController.text;
+    if (key.currentState!.validate()) {
+      final task = TasksEntities(
+        title: title,
+        color: 0xFFDBECF6,
+        icon: categoryIcons.keys.toList()[0],
+        date:  DateTime.now(),
+        hour: TimeOfDay.now().hour,
+        minute: TimeOfDay.now().minute,
+        notes: notes,
+        id: DateTime.now().toString(),
+      );
+
+      await addTaskUseCase.call(task);
+      Navigator.pop(context);
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +175,9 @@ class _AddScreenState extends State<AddScreen> {
         duration: const Duration(milliseconds: 2000),
         child: FloatingButtonWidget(
           title: "Сохранить",
-          onPressed: () {},
+          onPressed: () {
+            save();
+          },
         ),
       ),
     );

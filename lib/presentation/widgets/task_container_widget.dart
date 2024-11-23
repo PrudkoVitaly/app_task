@@ -1,3 +1,4 @@
+import 'package:app_task/data/model/task_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
@@ -5,8 +6,10 @@ import 'completed_container_widget.dart';
 
 class TaskContainerWidget extends StatefulWidget {
   final double top;
+  final List<TaskModel> taskList;
 
-  const TaskContainerWidget({super.key, this.top = 160});
+
+  const TaskContainerWidget({super.key, this.top = 160, required this.taskList});
 
   @override
   State<TaskContainerWidget> createState() => _TaskContainerWidgetState();
@@ -15,7 +18,6 @@ class TaskContainerWidget extends StatefulWidget {
 class _TaskContainerWidgetState extends State<TaskContainerWidget> {
   bool defaultValue = false;
   double defaultHeight = 700;
-  int defaultCount = 20;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
             margin: EdgeInsets.only(
               top: widget.top,
             ),
-            height: 272,
+            height: 85 * double.parse(widget.taskList.length.toString()),
             decoration: BoxDecoration(
               color: AppColors.whiteColor,
               borderRadius: BorderRadius.circular(16),
@@ -37,7 +39,7 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
               setState(() {
                 defaultValue = value!;
               });
-            }, defaultCount),
+            }, widget.taskList),
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
@@ -57,9 +59,9 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
   }
 }
 
-Widget _listItems(bool value, Function(bool?)? onChanged, int count) {
+Widget _listItems(bool value, Function(bool?)? onChanged, List<TaskModel> taskList) {
   return ListView.separated(
-    itemCount: count,
+    itemCount: taskList.length,
     separatorBuilder: (context, index) {
       return const Divider();
     },
@@ -71,8 +73,8 @@ Widget _listItems(bool value, Function(bool?)? onChanged, int count) {
               leading: const CircleAvatar(
                 backgroundColor: AppColors.primary,
               ),
-              title: Text('Task ${index + 1}'),
-              subtitle: const Text('Description'),
+              title: Text(taskList[index].title),
+              subtitle:  Text(taskList[index].notes),
               trailing: Checkbox(
                 value: value,
                 onChanged: onChanged,

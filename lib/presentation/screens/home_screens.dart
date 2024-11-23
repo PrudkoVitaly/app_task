@@ -1,9 +1,14 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:app_task/core/app_colors.dart';
+import 'package:app_task/data/data_sourse/task_date_source.dart';
+import 'package:app_task/domain/entities/tasks_entities.dart';
 import 'package:app_task/presentation/screens/add_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import '../../data/model/task_model.dart';
+import '../../domain/use_case/get_task_useCase.dart';
+import '../../service_locator.dart';
 import '../widgets/calendar.dart';
 import '../widgets/floating_button_widget.dart';
 import '../widgets/task_container_widget.dart';
@@ -18,6 +23,10 @@ class HomeScreens extends StatefulWidget {
 class _HomeScreensState extends State<HomeScreens> {
   OverlayEntry? _overlayEntry;
 
+  // final _taskBox = sl<TaskDateSource>();
+
+  final Box<TaskModel> _taskBox = Hive.box<TaskModel>("taskBox");
+
   @override
   void initState() {
     super.initState();
@@ -29,28 +38,12 @@ class _HomeScreensState extends State<HomeScreens> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-    TextEditingController titleController = TextEditingController();
-    TextEditingController descriptionController = TextEditingController();
-
-    final key = GlobalKey<FormState>();
-
-    @override
-    void dispose() {
-      titleController.dispose();
-      descriptionController.dispose();
-      super.dispose();
-    }
-
-
     return Scaffold(
-      body:  CustomScrollView(
+      body: CustomScrollView(
         slivers: [
-          TaskBody(),
+          TaskBody(taskBox: _taskBox),
         ],
       ),
       floatingActionButton: ZoomIn(
@@ -70,9 +63,7 @@ class _HomeScreensState extends State<HomeScreens> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddScreen(
-                      key: key,
-                    ),
+                    builder: (context) => AddScreen(),
                   ),
                 );
               },
@@ -88,14 +79,15 @@ class _HomeScreensState extends State<HomeScreens> {
   void _showOverlay() {
     final overlay = Overlay.of(context);
     _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 100,
-        right: 50,
-        child: Material(
-          color: Colors.transparent,
-          child: _buildSpeechBubble(),
-        ),
-      ),
+      builder: (context) =>
+          Positioned(
+            bottom: 100,
+            right: 50,
+            child: Material(
+              color: Colors.transparent,
+              child: _buildSpeechBubble(),
+            ),
+          ),
     );
 
     overlay?.insert(_overlayEntry!);
@@ -167,7 +159,9 @@ class TrianglePainter extends CustomPainter {
 
 // Контейнер с задачами
 class TaskBody extends StatelessWidget {
-  const TaskBody({super.key});
+  final Box<TaskModel> taskBox;
+
+  const TaskBody({super.key, required this.taskBox});
 
   @override
   Widget build(BuildContext context) {
@@ -175,18 +169,25 @@ class TaskBody extends StatelessWidget {
       child: Stack(
         children: [
           // Container for the calendar
-          _container(),
+          _calendar(),
 
           // Container for the tasks
           FadeInUpBig(
-            child: const TaskContainerWidget(),
+            child: ValueListenableBuilder(
+              valueListenable: taskBox.listenable(),
+              builder: (BuildContext context, Box<TaskModel> box,
+                  Widget? child) {
+                final taskList = box.values.toList();
+                return TaskContainerWidget(taskList: taskList,);
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _container() {
+  Widget _calendar() {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(

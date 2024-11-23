@@ -1,23 +1,19 @@
 import 'package:app_task/data/model/task_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class TaskDateSource {
-  final String _taskBox = 'taskBox';
 
-  Future<void> initHive() async {
-    Hive.registerAdapter(
-      TaskModelAdapter(),
-    );
-    await Hive.openBox<TaskModel>(_taskBox);
-  }
+  final Box<TaskModel> _getTask;
 
-  Box<TaskModel> _getTask() => Hive.box<TaskModel>(_taskBox);
+  TaskDateSource(this._getTask);
 
   Future<List<TaskModel>> getTask() async {
-    return _getTask().values.toList();
+    return _getTask.values.toList();
   }
 
   Future<void> addTask(TaskModel taskModel) async {
-    return _getTask().put(taskModel.id, taskModel);
+    return _getTask.put(taskModel.id, taskModel);
   }
 }
