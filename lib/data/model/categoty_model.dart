@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CategoryModel {
   final IconData icon;
-  final Color color;
+  final int color;
   bool isSelected;
 
   CategoryModel({
@@ -17,14 +17,15 @@ class CategoryModel {
 List<CategoryModel> categories = [
   CategoryModel(
     icon: CupertinoIcons.home,
-    color: Color(0xFFDBECF6),
+    color: 0xFFDBECF6,
+
   ),
   CategoryModel(
     icon: CupertinoIcons.person,
-    color: Color(0xFFE7E2F3),
+    color: 0xFFE7E2F3,
   ),
   CategoryModel(
-    icon: CupertinoIcons.person,
-    color: Color(0xFFFEF5D3),
+    icon: CupertinoIcons.alarm,
+    color: 0xFFFEF5D3,
   ),
 ];

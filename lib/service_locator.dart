@@ -19,6 +19,9 @@ Future<void> setUpServiceLocator() async {
 
   final _getTask = await Hive.openBox<TaskModel>('taskBox');
 
+  await Hive.openBox("deletedNotes");
+  await Hive.openBox<TaskModel>("tasks");
+
   sl.registerLazySingleton<TaskDateSource>(() => TaskDateSource(_getTask));
 
   sl.registerLazySingleton<TaskRepositories>(

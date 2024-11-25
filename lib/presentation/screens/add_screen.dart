@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../../core/app_colors.dart';
+import '../../core/utils.dart';
 import '../../data/model/categoty_model.dart';
 import '../../data/model/task_model.dart';
 import '../../service_locator.dart';
@@ -32,11 +33,7 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   // Selected Category
-  void selectedCategory(int index) {
-    setState(() {
-      categories[index].isSelected = !categories[index].isSelected;
-    });
-  }
+  int? selectedCategoryIndex;
 
   // Selected Date
   DateTime selectedDate = DateTime.now();
@@ -69,28 +66,21 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  // Category Icons
-  Map<String, IconData> categoryIcons = {
-    "Work": Icons.work,
-    "Personal": Icons.person,
-    "Health": Icons.health_and_safety,
-    "Shopping": Icons.shopping_bag,
-    "Travel": Icons.flight,
-  };
-
   final addTaskUseCase = sl<AddTaskUseCase>();
+
+
 
   void save() async {
     final title = titleController.text;
     final notes = notesController.text;
-    if (key.currentState!.validate()) {
+    if (key.currentState!.validate() && selectedCategoryIndex != null && selectedTime != null ) {
       final task = TasksEntities(
         title: title,
-        color: 0xFFDBECF6,
-        icon: categoryIcons.keys.toList()[0],
-        date:  DateTime.now(),
-        hour: TimeOfDay.now().hour,
-        minute: TimeOfDay.now().minute,
+        color: categories[selectedCategoryIndex!].color,
+        icon: categoryIcons.keys.toList()[selectedCategoryIndex!],
+        date: selectedDate,
+        hour: selectedTime!.hour,
+        minute: selectedTime!.minute,
         notes: notes,
         id: DateTime.now().toString(),
       );
@@ -98,7 +88,6 @@ class _AddScreenState extends State<AddScreen> {
       await addTaskUseCase.call(task);
       Navigator.pop(context);
     }
-
   }
 
   @override
@@ -190,31 +179,40 @@ class _AddScreenState extends State<AddScreen> {
         children: [
           _textWidget(text: "Category"),
           const SizedBox(width: 30),
-          for (int i = 0; i < 3; i++)
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: GestureDetector(
-                onTap: () {
-                  selectedCategory(i);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: CircleAvatar(
-                    backgroundColor: categories[i].isSelected
-                        ? AppColors.primary
-                        : AppColors.whiteColor,
-                    radius: 27,
-                    child: CircleAvatar(
-                      backgroundColor: categories[i].color,
-                      radius: 25,
-                      child: Icon(
-                        categories[i].icon,
+          Expanded(
+            child: SizedBox(
+              height: 80,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final isSelected = selectedCategoryIndex == index;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                         selectedCategoryIndex = index;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: CircleAvatar(
+                        backgroundColor:
+                            isSelected ? AppColors.primary : AppColors.whiteColor,
+                        radius: 27,
+                        child: CircleAvatar(
+                          backgroundColor: Color(categories[index].color),
+                          radius: 25,
+                          child: Icon(
+                            categories[index].icon,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
+          ),
         ],
       ),
     );
