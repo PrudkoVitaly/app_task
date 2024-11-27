@@ -7,4 +7,5 @@ class AppColors {
   static const Color blackColor = Color(0xFF000000);
   static const Color greyColor = Color(0xFF1B1B1D);
   static const Color borderColor = Color(0xFFE0E0E0);
+  static const Color inActiveCalendarColor = Color(0xFF797C80);
 }

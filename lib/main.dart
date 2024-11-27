@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.bgColor,
+
       ),
       home: HomeScreens(),
       // home: AddScreen(),

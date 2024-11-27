@@ -28,21 +28,32 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: EdgeInsets.only(
-              top: widget.top,
-            ),
-            height: 85 * double.parse(widget.taskList.length.toString()),
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: _listItems(defaultValue, (value) {
-              setState(() {
-                defaultValue = value!;
-              });
-            }, widget.taskList),
-          ),
+          widget.taskList.isEmpty
+              ? Container(
+            margin: EdgeInsets.only(top: widget.top),
+                  alignment: Alignment.center,
+                  height: 200,
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: Text(
+                    "No Tasks for today",
+                  ),
+                )
+              : Container(
+                  margin: EdgeInsets.only(
+                    top: widget.top,
+                  ),
+                  height: 85 * double.parse(widget.taskList.length.toString()),
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: _listItems(defaultValue, (value) {
+                    setState(() {
+                      defaultValue = value!;
+                    });
+                  }, widget.taskList),
+                ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
             child: Text(
@@ -95,9 +106,7 @@ Widget _listItems(
                       Icons.delete,
                       color: AppColors.blackColor,
                     ),
-                    onPressed: () {
-                      taskList.removeAt(index);
-                    },
+                    onPressed: () {},
                   ),
                 ],
               ),
