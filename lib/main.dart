@@ -1,5 +1,6 @@
 import 'package:app_task/core/app_colors.dart';
 import 'package:app_task/presentation/screens/home_screens.dart';
+import 'package:app_task/presentation/screens/main_screen.dart';
 import 'package:app_task/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -28,8 +29,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.bgColor,
 
       ),
-      home: HomeScreens(),
-      // home: AddScreen(),
+      // home: HomeScreens(),
+      home: MainScreen(),
     );
   }
 }

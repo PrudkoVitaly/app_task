@@ -15,15 +15,6 @@ class CompletedContainerWidget extends StatefulWidget {
 class _CompletedContainerWidgetState extends State<CompletedContainerWidget> {
   bool isChecked = false;
 
-
-
-  void addTask() {
-    showBottomSheet(
-      context: context,
-      builder: (context) => Container(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(

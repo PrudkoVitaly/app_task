@@ -6,8 +6,9 @@ import '../data_sourse/task_date_source.dart';
 
 class TaskRepositoriesImpl implements TaskRepositories {
   final TaskDateSource taskDateSource;
+  final CompletedTaskDateSource completedTaskDateSource;
 
-  TaskRepositoriesImpl({required this.taskDateSource});
+  TaskRepositoriesImpl({required this.taskDateSource, required this.completedTaskDateSource});
 
   @override
   Future<void> addTask(TasksEntities tasksEntities) async {
@@ -39,5 +40,31 @@ class TaskRepositoriesImpl implements TaskRepositories {
               notes: data.notes,
             ))
         .toList();
+  }
+
+  @override
+  Future<void> completedTask(String id, TasksEntities tasksEntities) async {
+    final taskModel = TaskModel(
+      title: tasksEntities.title,
+      color: tasksEntities.color,
+      icon: tasksEntities.icon,
+      date: tasksEntities.date,
+      hour: tasksEntities.hour,
+      minute: tasksEntities.minute,
+      notes: tasksEntities.notes,
+      id: tasksEntities.id,
+    );
+    await completedTaskDateSource.addTask(taskModel);
+    await taskDateSource.deleteTask(id);
+  }
+
+  @override
+  Future<void> deleteTask(String id) async{
+    await taskDateSource.deleteTask(id);
+  }
+
+  @override
+  Future<void> completedTaskDelete(String id) async {
+    await completedTaskDateSource.deleteTask(id);
   }
 }

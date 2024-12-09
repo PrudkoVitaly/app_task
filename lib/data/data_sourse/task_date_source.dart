@@ -16,4 +16,22 @@ class TaskDateSource {
   Future<void> addTask(TaskModel taskModel) async {
     return _getTask.put(taskModel.id, taskModel);
   }
+
+  Future<void> deleteTask(String id) async {
+    return _getTask.delete(id);
+  }
+}
+
+class CompletedTaskDateSource  {
+  final Box<TaskModel> _getTask;
+
+  CompletedTaskDateSource(this._getTask);
+
+  Future<void> addTask(TaskModel taskModel) async {
+    return _getTask.put(taskModel.id, taskModel);
+  }
+
+  Future<void> deleteTask(String id) async {
+    return _getTask.delete(id);
+  }
 }

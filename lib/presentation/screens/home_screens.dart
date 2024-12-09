@@ -16,22 +16,11 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  OverlayEntry? _overlayEntry;
-
-  // final _taskBox = sl<TaskDateSource>();
 
   final Box<TaskModel> _taskBox = Hive.box<TaskModel>("taskBox");
+  final Box<TaskModel> _completedBox = Hive.box<TaskModel>("completedTaskBox");
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Показать Overlay после загрузки экрана
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     Future.delayed(const Duration(seconds: 3), () {
-  //       _showOverlay();
-  //     });
-  //   });
-  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +28,7 @@ class _HomeScreensState extends State<HomeScreens> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            TaskBody(taskBox: _taskBox),
+            TaskBody(taskBox: _taskBox, completedBox: _completedBox),
           ],
         ),
       ),
@@ -71,93 +60,14 @@ class _HomeScreensState extends State<HomeScreens> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
-
-  // Показать Overlay
-  void _showOverlay() {
-    final overlay = Overlay.of(context);
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 100,
-        right: 50,
-        child: Material(
-          color: Colors.transparent,
-          child: _buildSpeechBubble(),
-        ),
-      ),
-    );
-
-    overlay?.insert(_overlayEntry!);
-
-    // Убрать Overlay через 3 секунды
-    Future.delayed(const Duration(seconds: 6), () {
-      _overlayEntry?.remove();
-      _overlayEntry = null;
-    });
-  }
-
-  // Создаем виджет облака
-  Widget _buildSpeechBubble() {
-    return BounceInDown(
-      duration: const Duration(seconds: 2),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Основной контейнер с текстом
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Text(
-              'Добавить новую задачу',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-          // Хвостик облака
-          Positioned(
-            bottom: -20,
-            left: 35,
-            child: Transform.rotate(
-              angle: 0.5,
-              child: CustomPaint(
-                size: const Size(30, 30),
-                painter: TrianglePainter(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Рисуем треугольник для хвостика
-class TrianglePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(0, 0);
-    path.lineTo(size.width / 2, size.height);
-    path.lineTo(size.width, 0);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // Контейнер с задачами
 class TaskBody extends StatefulWidget {
   final Box<TaskModel> taskBox;
+  final Box<TaskModel> completedBox;
 
-  const TaskBody({super.key, required this.taskBox});
+  const TaskBody({super.key, required this.taskBox, required this.completedBox});
 
   @override
   State<TaskBody> createState() => _TaskBodyState();

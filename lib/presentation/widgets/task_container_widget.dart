@@ -1,9 +1,13 @@
 import 'package:app_task/data/model/task_model.dart';
+import 'package:app_task/domain/use_case/completed_task_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../../core/app_colors.dart';
 import '../../core/utils.dart';
+import '../../domain/entities/tasks_entities.dart';
+import '../../domain/use_case/get_task_useCase.dart';
+import '../../service_locator.dart';
 import 'completed_container_widget.dart';
 
 class TaskContainerWidget extends StatefulWidget {
@@ -20,6 +24,11 @@ class TaskContainerWidget extends StatefulWidget {
 class _TaskContainerWidgetState extends State<TaskContainerWidget> {
   bool defaultValue = false;
   double defaultHeight = 700;
+  final completedTaskUseCase = sl<CompletedTaskUseCase>();
+
+  Future<void> completedTask(String id, TasksEntities tasksEntities) async {
+    await completedTaskUseCase.call(id, tasksEntities);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +39,12 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
         children: [
           widget.taskList.isEmpty
               ? Container(
-            margin: EdgeInsets.only(top: widget.top),
+                  margin: EdgeInsets.only(top: widget.top),
                   alignment: Alignment.center,
                   height: 200,
                   width: double.infinity,
                   color: Colors.white,
-                  child: Text(
+                  child: const Text(
                     "No Tasks for today",
                   ),
                 )
@@ -48,11 +57,10 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
                     color: AppColors.whiteColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: _listItems(defaultValue, (value) {
-                    setState(() {
-                      defaultValue = value!;
-                    });
-                  }, widget.taskList),
+                  child: _listItems(
+                    taskList: widget.taskList,
+
+                  ),
                 ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
@@ -65,55 +73,60 @@ class _TaskContainerWidgetState extends State<TaskContainerWidget> {
               ),
             ),
           ),
-          CompletedContainerWidget(),
+          const CompletedContainerWidget(),
         ],
       ),
     );
   }
-}
-
-Widget _listItems(
-    bool value, Function(bool?)? onChanged, List<TaskModel> taskList) {
-  return ListView.separated(
-    itemCount: taskList.length,
-    separatorBuilder: (context, index) {
-      return const Divider();
-    },
-    itemBuilder: (context, index) {
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            ListTile(
-              leading: CircleAvatar(
-                radius: 40,
-                backgroundColor: Color(taskList[index].color),
-                child: Icon(
-                  categoryIcons[taskList[index].icon],
+  Widget _listItems(
+      {required List<TaskModel> taskList}) {
+    return ListView.separated(
+      itemCount: taskList.length,
+      separatorBuilder: (context, index) {
+        return const Divider();
+      },
+      itemBuilder: (context, index) {
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              ListTile(
+                leading: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Color(taskList[index].color),
+                  child: Icon(
+                    categoryIcons[taskList[index].icon],
+                  ),
+                ),
+                title: Text(taskList[index].title),
+                subtitle: Text(
+                    "${taskList[index].notes} ${taskList[index].hour} : ${taskList[index].minute}"),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: (){
+                        completedTask(taskList[index].id, taskList[index] as TasksEntities);
+                      },
+                      icon: const Icon(
+                        Icons.check_box_outline_blank,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete,
+                        color: AppColors.blackColor,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
               ),
-              title: Text(taskList[index].title),
-              subtitle: Text(
-                  "${taskList[index].notes} ${taskList[index].hour} : ${taskList[index].minute}"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Checkbox(
-                    value: value,
-                    onChanged: onChanged,
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete,
-                      color: AppColors.blackColor,
-                    ),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
+
+

@@ -17,6 +17,8 @@ class FloatingButtonWidget extends StatelessWidget {
       child: FloatingActionButton(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.whiteColor,
+        shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        elevation: 0,
         onPressed: onPressed,
         child:  Text(
           title,
