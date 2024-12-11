@@ -4,6 +4,7 @@ import 'package:app_task/domain/use_case/add_task_useCase.dart';
 import 'package:app_task/domain/use_case/completed_task_deleted_useCase.dart';
 import 'package:app_task/domain/use_case/completed_task_use_case.dart';
 import 'package:app_task/domain/use_case/get_task_useCase.dart';
+import 'package:app_task/domain/use_case/return_task_useCase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -62,6 +63,12 @@ Future<void> setUpServiceLocator() async {
   sl.registerLazySingleton(
     () => CompletedTaskDeletedUseCase(
       taskRepositories: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => ReturnTaskUseCase(
+      sl(),
     ),
   );
 }

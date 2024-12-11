@@ -67,4 +67,20 @@ class TaskRepositoriesImpl implements TaskRepositories {
   Future<void> completedTaskDelete(String id) async {
     await completedTaskDateSource.deleteTask(id);
   }
+
+  @override
+  Future<void> returnTask(String id, TasksEntities tasksEntities) async {
+    final taskModel = TaskModel(
+      title: tasksEntities.title,
+      color: tasksEntities.color,
+      icon: tasksEntities.icon,
+      date: tasksEntities.date,
+      hour: tasksEntities.hour,
+      minute: tasksEntities.minute,
+      notes: tasksEntities.notes,
+      id: tasksEntities.id,
+    );
+    await taskDateSource.addTask(taskModel);
+    await completedTaskDateSource.deleteTask(id);
+  }
 }

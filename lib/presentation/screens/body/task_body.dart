@@ -9,6 +9,7 @@ import '../../../core/utils.dart';
 import '../../../data/model/task_model.dart';
 import '../../../domain/entities/tasks_entities.dart';
 import '../../../domain/use_case/completed_task_use_case.dart';
+import '../../../domain/use_case/return_task_useCase.dart';
 import '../../../service_locator.dart';
 
 class TaskBody extends StatefulWidget {
@@ -58,6 +59,7 @@ class _TaskBodyState extends State<TaskBody> {
   final completedTaskUseCase = sl<CompletedTaskUseCase>();
   final deleteTaskUseCase = sl<DeleteTaskUseCase>();
   final completedTaskDeletedUseCase = sl<CompletedTaskDeletedUseCase>();
+  final returnTaskUseCase = sl<ReturnTaskUseCase>();
 
   void completedTask(String id, TaskModel taskModel) async {
     final taskEntities = TasksEntities(
@@ -81,6 +83,21 @@ class _TaskBodyState extends State<TaskBody> {
 
   void completedTaskDeleted(String id) async {
     await completedTaskDeletedUseCase.call(id);
+    setState(() {});
+  }
+
+  void returnTask(String id, TaskModel taskModel) async {
+    final taskEntities = TasksEntities(
+      id: taskModel.id,
+      title: taskModel.title,
+      color: taskModel.color,
+      icon: taskModel.icon,
+      date: taskModel.date,
+      hour: taskModel.hour,
+      minute: taskModel.minute,
+      notes: taskModel.notes,
+    );
+    await returnTaskUseCase.call(id, taskEntities);
     setState(() {});
   }
 
@@ -144,59 +161,58 @@ class _TaskBodyState extends State<TaskBody> {
                 : (direction) {
                     deleteTask(taskList[index].id);
                   },
-            child: ListTile(
-              leading: CircleAvatar(
-                radius: 40,
-                backgroundColor: Color(taskList[index].color),
-                child: Icon(
-                  categoryIcons[taskList[index].icon],
-                ),
+            child: Container(
+              alignment:  Alignment.centerLeft,
+              height: 85,
+              decoration:  BoxDecoration(
+                color: AppColors.whiteColor,
+                borderRadius: BorderRadius.circular(16),
               ),
-              title: Text(
-                taskList[index].title,
-                style: TextStyle(
-                  decoration:
-                      isDone ? TextDecoration.lineThrough : TextDecoration.none,
-                ),
-              ),
-              subtitle: Text(
-                "${taskList[index].notes} ${taskList[index].hour} : ${taskList[index].minute}",
-                style: TextStyle(
-                  decoration:
-                      isDone ? TextDecoration.lineThrough : TextDecoration.none,
-                ),
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: isDone
-                        ? () {}
-                        : () {
-                            completedTask(taskList[index].id, taskList[index]);
-                          },
-                    icon: isDone
-                        ? const Icon(
-                            Icons.check_box,
-                            color: AppColors.primary,
-                          )
-                        : const Icon(
-                            Icons.check_box_outline_blank,
-                          ),
+              child: ListTile(
+
+                leading: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Color(taskList[index].color),
+                  child: Icon(
+                    categoryIcons[taskList[index].icon],
                   ),
-                  // IconButton(
-                  //   icon: const Icon(
-                  //     Icons.delete,
-                  //     color: AppColors.blackColor,
-                  //   ),
-                  //   onPressed: isDone
-                  //       ? () {}
-                  //       : () {
-                  //           completedTask(taskList[index].id,
-                  //               taskList[index] as TasksEntities);
-                  //         },
-                  // ),
-                ],
+                ),
+                title: Text(
+                  taskList[index].title,
+                  style: TextStyle(
+                    decoration:
+                        isDone ? TextDecoration.lineThrough : TextDecoration.none,
+                  ),
+                ),
+                subtitle: Text(
+                  "${taskList[index].notes} ${taskList[index].hour} : ${taskList[index].minute}",
+                  style: TextStyle(
+                    decoration:
+                        isDone ? TextDecoration.lineThrough : TextDecoration.none,
+                  ),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: isDone
+                          ? () {
+                        returnTask(taskList[index].id, taskList[index]);
+                      }
+                          : () {
+                              completedTask(taskList[index].id, taskList[index]);
+                            },
+                      icon: isDone
+                          ? const Icon(
+                              Icons.check_box,
+                              color: AppColors.primary,
+                            )
+                          : const Icon(
+                              Icons.check_box_outline_blank,
+                            ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
